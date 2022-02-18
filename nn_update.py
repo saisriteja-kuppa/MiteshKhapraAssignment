@@ -75,7 +75,7 @@ class momentumSgd():
         self.lr = lr
         self.momentum = momentum
 
-    def update(self, layer):
+    def update_params(self, layer):
 
         if not hasattr(layer, 'weight_momentums'):
             layer.weight_momentums = np.zeros_like(layer.W)
