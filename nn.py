@@ -63,7 +63,7 @@ class Loss:
 
 
 class CategoricalCrossentropyLoss(Loss):
-    def ForwardProp(self, predicted, original):
+    def ForwardPro(self, predicted, original):
 
         samples = len(predicted)
         y_pred_clipped = np.clip(predicted, 1e-15, 1 - 1e-15)
@@ -74,7 +74,7 @@ class CategoricalCrossentropyLoss(Loss):
         return Nlog
 
     
-    def BackwardProp(self, derivativevalues, original):
+    def BackwardPro(self, derivativevalues, original):
 
         samples = len(derivativevalues)
         lables = len(derivativevalues[0])
@@ -84,18 +84,17 @@ class CategoricalCrossentropyLoss(Loss):
         self.derivativeInput = self.derivativeInput / samples
 
 
-from nnactivations import softmax
 class softmaxCCEloss():
     def __init__(self):
-        self.activation = softmax()
+        self.activation = SoftmaxActivation()
         self.loss = CategoricalCrossentropyLoss()
     
-    def forward(self, predicted, original):
-        self.activation.ForwardProp(original)
+    def ForwardPro(self, predicted, original):
+        self.activation.ForwardPro(original)
         self.output = self.activation.DataOutput(original)
         return self.loss.calculate(self.output, predicted)
 
-    def backward(self, derivativevalues, original):
+    def BackwardPro(self, derivativevalues, original):
         samples = len(derivativevalues)
         self.derivativeinputs  =derivativevalues.copy()
         self.derivativeinputs[range(samples), original] -= 1
@@ -151,5 +150,19 @@ class SoftmaxActivation:
             self.DerivativeInputs[No] = np.dot(JMatrix, DerivativeValue)
 
 
-    
+class Activation_Softmax:
+
+    # Forward pass
+    def forward(self, inputs):
+        # Remember input values
+        self.inputs = inputs
+
+        # Get unnormalized probabilities
+        exp_values = np.exp(inputs - np.max(inputs, axis=1,
+                                            keepdims=True))
+        # Normalize them for each sample
+        probabilities = exp_values / np.sum(exp_values, axis=1,
+                                            keepdims=True)
+
+        self.output = probabilities
 
