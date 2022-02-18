@@ -71,8 +71,8 @@ class Softmax:
 
 
 class momentumSgd():
-    def __init__(self, learning_rate, momentum):
-        self.learning_rate = learning_rate
+    def __init__(self, lr, momentum):
+        self.lr = lr
         self.momentum = momentum
 
     def update(self, layer):
@@ -81,31 +81,30 @@ class momentumSgd():
             layer.weight_momentums = np.zeros_like(layer.W)
             layer.bias_momentums = np.zeros_like(layer.b)
 
-        weight_updates = self.momentum * layer.weight_momentums -  self.current_learning_rate * layer.dW
-        layer.weight_momentums = weight_updates
+        UpdateW = self.momentum * layer.weight_momentums -  self.current_lr * layer.dW
+        layer.weight_momentums = UpdateW
 
-        bias_updates = self.momentum * layer.bias_momentums - self.current_learning_rate * layer.db
-        layer.bias_momentums = bias_updates
+        Updateb = self.momentum * layer.bias_momentums - self.current_lr * layer.db
+        layer.bias_momentums = Updateb
     
-        layer.W += weight_updates
-        layer.b += bias_updates
+        layer.W += UpdateW
+        layer.b += Updateb
 
 
 # SGD optimizer
 class SGD:
-    def __init__(self, learning_rate=1.):
-        self.learning_rate = learning_rate
+    def __init__(self, lr=1.):
+        self.lr = lr
 
 
     # Update parameters
     def update_params(self, layer):
 
-        weight_updates = -self.current_learning_rate * layer.dW
-        bias_updates = -self.current_learning_rate *   layer.db
+        UpdateW = -self.lr * layer.dW
+        Updateb = -self.lr *   layer.db
 
-
-        layer.W += weight_updates
-        layer.b += bias_updates
+        layer.W += UpdateW
+        layer.b += Updateb
 
 
 
@@ -116,25 +115,25 @@ class SGD:
 class RMSprop:
 
     # Initialize optimizer - set settings
-    def __init__(self, learning_rate=0.001, decay=0., epsilon=1e-7,
+    def __init__(self, lr=0.001, decay=0., eps=1e-7,
                  rho=0.9):
-        self.learning_rate = learning_rate
-        self.epsilon = epsilon
+        self.lr = lr
+        self.eps = eps
         self.rho = rho
 
 
     # Update parameters
     def update_params(self, layer):
 
-        if not hasattr(layer, 'weight_cache'):
-            layer.weight_cache = np.zeros_like(layer.W)
-            layer.bias_cache = np.zeros_like(layer.b)
+        if not hasattr(layer, 'CacheW'):
+            layer.CacheW = np.zeros_like(layer.W)
+            layer.Cacheb = np.zeros_like(layer.b)
 
-        layer.weight_cache = self.rho * layer.weight_cache + (1 - self.rho) * layer.dW**2
-        layer.bias_cache = self.rho * layer.bias_cache + (1 - self.rho) * layer.db**2
+        layer.CacheW = self.rho * layer.CacheW + (1 - self.rho) * layer.dW**2
+        layer.Cacheb = self.rho * layer.Cacheb + (1 - self.rho) * layer.db**2
 
-        layer.W += -self.current_learning_rate *  layer.dW /  (np.sqrt(layer.weight_cache) + self.epsilon)
-        layer.b += -self.current_learning_rate *  layer.db /  (np.sqrt(layer.bias_cache) + self.epsilon)
+        layer.W += -self.lr *  layer.dW /  (np.sqrt(layer.CacheW) + self.eps)
+        layer.b += -self.lr *  layer.db /  (np.sqrt(layer.Cacheb) + self.eps)
 
 
 class Loss:
@@ -142,6 +141,8 @@ class Loss:
         sample_losses = self.ForwardPass(DataOutput, y)
         data_loss = np.mean(sample_losses)
         return data_loss
+
+
 
 
 # Cross-entropy loss
