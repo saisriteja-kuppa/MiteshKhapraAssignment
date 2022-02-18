@@ -81,10 +81,10 @@ class momentumSgd():
             layer.weight_momentums = np.zeros_like(layer.W)
             layer.bias_momentums = np.zeros_like(layer.b)
 
-        UpdateW = self.momentum * layer.weight_momentums -  self.current_lr * layer.dW
+        UpdateW = self.momentum * layer.weight_momentums -  self.lr * layer.dW
         layer.weight_momentums = UpdateW
 
-        Updateb = self.momentum * layer.bias_momentums - self.current_lr * layer.db
+        Updateb = self.momentum * layer.bias_momentums - self.lr * layer.db
         layer.bias_momentums = Updateb
     
         layer.W += UpdateW
