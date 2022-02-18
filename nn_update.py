@@ -4,7 +4,7 @@ import numpy as np
 
 
 # Dense layer
-class Layer_Dense:
+class DenseLayer:
 
     # Layer initialization
     def __init__(self, inputShape, NoOfNeurons):
@@ -113,7 +113,7 @@ class SGD:
 
 
 # RMSprop optimizer
-class Optimizer_RMSprop:
+class RMSprop:
 
     # Initialize optimizer - set settings
     def __init__(self, learning_rate=0.001, decay=0., epsilon=1e-7,
