@@ -7,10 +7,14 @@ import numpy as np
 class DenseLayer:
 
     # Layer initialization
-    def __init__(self, inputShape, NoOfNeurons):
+    def __init__(self, inputShape, NoOfNeurons,W_regu_l2 = 0, b_regu_l2 = 0):
         # Initialize W and b
         self.W = 0.01 * np.random.randn(inputShape, NoOfNeurons)
         self.b = np.zeros((1, NoOfNeurons))
+
+        self.W_regu_l2 = W_regu_l2
+        self.b_regu_l2 = b_regu_l2
+
 
     # ForwardPass pass
     def ForwardPass(self, DataInput):
@@ -19,13 +23,25 @@ class DenseLayer:
         # Calculate DataOutput values from DataInput, W and b
         self.DataOutput = np.dot(DataInput, self.W) + self.b
 
+
     # BackProp pass
     def BackProp(self, derivativevalues):
         # Gradients on parameters
         self.dW = np.dot(self.DataInput.T, derivativevalues)
         self.db = np.sum(derivativevalues, axis=0, keepdims=True)
+
+        if self.W_regu_l2 > 0:
+            self.dW += 2 * self.W_regu_l2 *  self.W
+
+        if self.b_regu_l2 > 0:
+            self.db += 2 * self.b_regu_l2 *  self.b
+
         # Gradient on values
         self.dDataInput = np.dot(derivativevalues, self.W.T)
+
+
+
+
 
 
 # ReLU activation
@@ -91,6 +107,29 @@ class momentumSgd():
         layer.b += Updateb
 
 
+
+
+
+class nag():
+    def __init__(self, lr, momentum):
+        self.lr = lr
+        self.momentum = momentum
+
+    def update_params(self, layer):
+        if not hasattr(layer, 'weight_momentums'):
+            layer.weight_momentums = np.zeros_like(layer.W)
+            layer.bias_momentums = np.zeros_like(layer.b)
+
+
+
+
+
+
+
+
+
+
+
 # SGD optimizer
 class SGD:
     def __init__(self, lr=1.):
@@ -136,7 +175,60 @@ class RMSprop:
         layer.b += -self.lr *  layer.db /  (np.sqrt(layer.Cacheb) + self.eps)
 
 
+
+# Adam optimizer
+class Adam:
+
+    def __init__(self, learning_rate=0.001, eps=1e-7,
+                 beta_1=0.9, beta_2=0.999):
+        self.lr = learning_rate
+        self.eps = eps
+        self.beta_1 = beta_1
+        self.beta_2 = beta_2
+
+
+    # Update parameters
+    def update_params(self, layer):
+
+        if not hasattr(layer, 'weight_cache'):
+            layer.momemtumW = np.zeros_like(layer.W)
+            layer.cacheW = np.zeros_like(layer.W)
+            layer.momentumb = np.zeros_like(layer.b)
+            layer.cacheb = np.zeros_like(layer.b)
+
+        layer.momemtumW = self.beta_1 *   layer.momemtumW +   (1 - self.beta_1) * layer.dW
+        layer.momentumb = self.beta_1 * layer.momentumb + (1 - self.beta_1) * layer.db
+
+        momemtumW_corrected = layer.momemtumW / (1 - self.beta_1 ** (self.iterations + 1))
+        momentumb_corrected = layer.momentumb / (1 - self.beta_1 ** (self.iterations + 1))
+        layer.cacheW = self.beta_2 * layer.cacheW + (1 - self.beta_2) * layer.dW**2
+
+        layer.cacheb = self.beta_2 * layer.cacheb + (1 - self.beta_2) * layer.db**2
+        cacheW_corrected = layer.cacheW / (1 - self.beta_2 ** (self.iterations + 1))
+        cacheb_corrected = layer.cacheb / (1 - self.beta_2 ** (self.iterations + 1))
+
+        layer.W += -self.lr * momemtumW_corrected / (np.sqrt(cacheW_corrected) + self.epsilon)
+        layer.b += -self.lr * momentumb_corrected / (np.sqrt(cacheb_corrected) + self.epsilon)
+
+
+
+
 class Loss:
+
+    def regularization_loss(self, layer):
+
+        regularization_loss = 0
+
+        if layer.weight_regularizer_l2 > 0:
+            regularization_loss += layer.weight_regularizer_l2 * np.sum(layer.weights *  layer.weights)
+
+        if layer.bias_regularizer_l2 > 0:
+            regularization_loss += layer.bias_regularizer_l2 * np.sum(layer.biases * layer.biases)
+        
+        return regularization_loss
+
+
+
     def calculate(self, DataOutput, y):
         sample_losses = self.ForwardPass(DataOutput, y)
         data_loss = np.mean(sample_losses)
