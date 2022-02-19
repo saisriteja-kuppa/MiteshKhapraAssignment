@@ -58,6 +58,40 @@ class ReLU:
 
 
 
+class tanH:
+
+    def ForwardPass(self, DataInput):
+        self.DataInput = DataInput
+        self.DataOutput = np.tanh(DataInput)
+
+    # BackProp pass
+    def BackProp(self, derivativevalues):
+        self.dDataInput = derivativevalues.copy()
+        self.dDataInput = 1 - np.tanh(self.dDataInput)**2
+
+
+class Sigmoid:
+
+    def function(self,x):
+        return 1/(1+np.exp(-x))
+
+    def ForwardPass(self, DataInput):
+        self.DataInput = DataInput
+        self.DataOutput = self.function(DataInput)
+
+    # BackProp pass
+    def BackProp(self, derivativevalues):
+        self.dDataInput = derivativevalues.copy()
+        self.dDataInput = function(self.dDataInput) * (1 - function(self.dDataInput))
+
+
+
+
+
+
+
+
+
 class Softmax:
     def ForwardPass(self, DataInput):
         self.DataInput = DataInput
@@ -214,20 +248,13 @@ class Adam:
 
 
 class Loss:
-
     def regularization_loss(self, layer):
-
         regularization_loss = 0
-
-        if layer.weight_regularizer_l2 > 0:
-            regularization_loss += layer.weight_regularizer_l2 * np.sum(layer.weights *  layer.weights)
-
-        if layer.bias_regularizer_l2 > 0:
-            regularization_loss += layer.bias_regularizer_l2 * np.sum(layer.biases * layer.biases)
-        
+        if layer.W_regu_l2 > 0:
+            regularization_loss += layer.W_regu_l2 * np.sum(layer.weights *  layer.weights)
+        if layer.b_regu_l2 > 0:
+            regularization_loss += layer.b_regu_l2 * np.sum(layer.biases * layer.biases)
         return regularization_loss
-
-
 
     def calculate(self, DataOutput, y):
         sample_losses = self.ForwardPass(DataOutput, y)
