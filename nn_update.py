@@ -1,5 +1,5 @@
 import numpy as np
-
+import math
 
 
 
@@ -7,11 +7,19 @@ import numpy as np
 class DenseLayer:
 
     # Layer initialization
-    def __init__(self, inputShape, NoOfNeurons,W_regu_l2 = 0, b_regu_l2 = 0):
+    def __init__(self, inputShape, NoOfNeurons,W_regu_l2 = 0, b_regu_l2 = 0, initialization = 'random'):
         # Initialize W and b
-        self.W = 0.01 * np.random.randn(inputShape, NoOfNeurons)
-        self.b = np.zeros((1, NoOfNeurons))
 
+
+        if initialization == 'random':
+            self.W = 0.01 * np.random.randn(inputShape, NoOfNeurons)
+
+        if initialization == 'Xavier':
+            scale = 1/max(1., (2+2)/2.)
+            limit = math.sqrt(3.0 * scale)
+            self.W = np.random.uniform(-limit, limit, size=(inputShape, NoOfNeurons))
+
+        self.b = np.zeros((1, NoOfNeurons))
         self.W_regu_l2 = W_regu_l2
         self.b_regu_l2 = b_regu_l2
 
@@ -42,8 +50,6 @@ class DenseLayer:
 
 
 
-
-
 # ReLU activation
 class ReLU:
 
@@ -58,8 +64,7 @@ class ReLU:
 
 
 
-class tanH:
-
+class TanH:
     def ForwardPass(self, DataInput):
         self.DataInput = DataInput
         self.DataOutput = np.tanh(DataInput)
@@ -71,7 +76,6 @@ class tanH:
 
 
 class Sigmoid:
-
     def function(self,x):
         return 1/(1+np.exp(-x))
 
@@ -241,8 +245,8 @@ class Adam:
         cacheW_corrected = layer.cacheW / (1 - self.beta_2 ** (self.iterations + 1))
         cacheb_corrected = layer.cacheb / (1 - self.beta_2 ** (self.iterations + 1))
 
-        layer.W += -self.lr * momemtumW_corrected / (np.sqrt(cacheW_corrected) + self.epsilon)
-        layer.b += -self.lr * momentumb_corrected / (np.sqrt(cacheb_corrected) + self.epsilon)
+        layer.W += -self.lr * momemtumW_corrected / (np.sqrt(cacheW_corrected) + self.eps)
+        layer.b += -self.lr * momentumb_corrected / (np.sqrt(cacheb_corrected) + self.eps)
 
 
 
