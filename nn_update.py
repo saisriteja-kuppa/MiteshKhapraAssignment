@@ -83,7 +83,7 @@ class TanH:
 class Sigmoid:
     def __init__(self):
         pass
-    
+
     def function(self,x):
         return 1/(1+np.exp(-x))
 
@@ -133,7 +133,7 @@ class Softmax:
 
 
 class momentumSgd():
-    def __init__(self, lr, momentum):
+    def __init__(self, lr, momentum = 0.9):
         self.lr = lr
         self.momentum = momentum
 
