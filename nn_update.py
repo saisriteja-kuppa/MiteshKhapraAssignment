@@ -53,6 +53,9 @@ class DenseLayer:
 # ReLU activation
 class ReLU:
 
+    def __init__(self):
+        pass
+
     def ForwardPass(self, DataInput):
         self.DataInput = DataInput
         self.DataOutput = np.maximum(0, DataInput)
@@ -63,8 +66,10 @@ class ReLU:
         self.dDataInput[self.DataInput <= 0] = 0
 
 
-
+ 
 class TanH:
+    def __init__(self):
+        pass
     def ForwardPass(self, DataInput):
         self.DataInput = DataInput
         self.DataOutput = np.tanh(DataInput)
@@ -76,6 +81,9 @@ class TanH:
 
 
 class Sigmoid:
+    def __init__(self):
+        pass
+    
     def function(self,x):
         return 1/(1+np.exp(-x))
 
