@@ -3,11 +3,9 @@ from nn_update import  RMSprop, Softmax_Loss_CategoricalCrossentropy, SGD
 import numpy as np
 
 
-def main(epochs, NoOfHiddenLayers, SizeOfHiddenLayers, WeightDecay, LearningRate, Optimizer, BatchSize, WeightInit, ActivationFunc):
+def main(epochs, NoOfHiddenLayers, SizeOfHiddenLayers, WeightDecay, LearningRate, Optimizer, BatchSize, WeightInit, ActivationFunc, X, y):
 
 
-    X  = np.random(10)
-    y = np.random(10)
     ActivationFunc = ReLU
     loss_Activation = Softmax_Loss_CategoricalCrossentropy()
     optimizer = Optimizer(lr = LearningRate)
