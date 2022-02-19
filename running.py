@@ -1,4 +1,4 @@
-from nn_update import DenseLayer, Softmax, ReLU, tanH, Sigmoid
+from nn_update import DenseLayer, Softmax, ReLU, TanH, Sigmoid
 from nn_update import  RMSprop, Softmax_Loss_CategoricalCrossentropy, SGD
 import numpy as np
 
